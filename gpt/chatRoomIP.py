@@ -1,6 +1,6 @@
 home = '192.168.1.22'
-school = ''
+school = '10.1.148.22'
 hotspot = ''
 
-currentIP = home
+currentIP = school
 port_number = 5555

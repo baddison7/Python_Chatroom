@@ -1,6 +1,6 @@
 import socket, threading
 from _thread import *
-from chatRoomIP import currentIP, port_number
+from gpt.chatRoomIP import currentIP, port_number
 
 # Server configuration
 server = currentIP

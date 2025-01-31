@@ -1,70 +1,56 @@
 import socket, time, threading
-from chatRoomIP import currentIP, port_number
 
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = currentIP
-        self.port = port_number
+        self.server = '10.1.148.22'
+        self.port = 5555
         self.addr = (self.server, self.port)
         self.name = 'XXX'  # Default name
+        self.running = True  # Flag to control receiving
         self.connect()
 
     def connect(self):
         self.name = input("Enter your name: ")
         try:
             self.client.connect(self.addr)
-            self.client.send(str.encode(self.name))
-
-
-            # welcome_message = self.client.recv(2048).decode()
-            # print(welcome_message)
-            # anything that needs to be done for connection
-
         except Exception as e:
             print(f"Connection error: {e}")
 
     def get_timestamp(self):
-        # Get the current timestamp in the format hh:mm
         return time.strftime("%H:%M", time.localtime())
 
-    def message(self):
-        string = input(f"")
+    def message(self, string):
         timestamp = self.get_timestamp()
         message = f"{self.name} {timestamp}: {string}"
         self.client.send(str.encode(message))
 
-
-
     def send(self):
         try:
             while True:
-                string = input(f"")
-
-                if string.lower()[0] == '/':
-                    # print("Closing connection")
-                    # self.client.send(str.encode(f"{self.name} is exiting"))
-                    # exit protocal
+                string = input("")
+                self.message(string)
+                if string.lower() == '/exit':
+                    self.running = False  # Tell receive() to stop
                     break
-                else:
-                    self.message()
 
         except socket.error as e:
             print(f"Socket error: {e}")
         finally:
-            self.client.close()
+            self.client.close()  # Close the socket here
 
     def receive(self):
         try:
-            while True:
+            while self.running:
                 response = self.client.recv(2048).decode()
                 if not response:
                     break
                 print(response)
-        except socket.error as e:
-            print(f"Socket error: {e}")
+        except OSError as e:  # Handle bad file descriptor error
+            if self.running:  # Only print the error if we didn't intentionally close
+                print(f"Socket error: {e}")
         finally:
-            self.client.close()
+            self.client.close()  # Ensure socket is closed
 
 n = Network()
 
@@ -76,6 +62,7 @@ receive_thread = threading.Thread(target=n.receive)
 send_thread.start()
 receive_thread.start()
 
-# Wait for both threads to finish
+# Wait for send_thread to finish before stopping receive()
 send_thread.join()
+n.running = False  # Ensure receive() stops
 receive_thread.join()

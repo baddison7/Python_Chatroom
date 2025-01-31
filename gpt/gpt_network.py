@@ -1,5 +1,5 @@
 import socket, threading, time
-from chatRoomIP import currentIP, port_number
+from gpt.chatRoomIP import currentIP, port_number
 
 class Network:
     def __init__(self):

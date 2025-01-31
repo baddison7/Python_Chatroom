@@ -1,9 +1,7 @@
 import socket, threading
 from _thread import *
-from chatRoom.chatRoomIP import currentIP, port_number
 
-# Server configuration
-server = currentIP.currentIP
+server = '10.1.148.22'
 port = 5555
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,26 +36,18 @@ class ChatRoom:
 
     def client_thread(conn, addr):
         print(f"Connected to: {addr}")
-        conn.send(str.encode("Welcome to the chat server! Waiting for chat to start...\n"))
         with lock:
             clients.append(conn)
-
         try:
             while True:
                 data = conn.recv(2048)
                 if not data:
                     break
-
                 message = data.decode("utf-8").strip()
-
-                if message.lower() == "exit":
-                    conn.send(str.encode("Goodbye!"))
-                    break
-
-                if not chat_started:
-                    conn.send(str.encode("Chat has not started yet. Please wait.\n"))
-                else:
+                if message.lower() != "exit":
                     broadcast(message, conn)
+                else:
+                    break
 
         except Exception as e:
             print(f"Error handling client {addr}: {e}")
@@ -68,40 +58,10 @@ class ChatRoom:
             conn.close()
             print(f"Disconnected from {addr}")
 
-
-def admin_commands():
-    global chat_started
-    global s  # Use the global socket object to close it
-
-    while True:
-        command = input("Enter server command (/start, /end, /quit): \n").strip().lower()
-
-        if command == "/start":
-            chat_started = True
-            print("Chat started!")
-            broadcast("Chat has been started by the admin.\n")
-        elif command == "/end":
-            chat_started = False
-            print("Chat ended!")
-            broadcast("Chat has been ended by the admin.\n")
-        elif command == "/quit":
-            print("Shutting down the server...")
-            broadcast("Server is shutting down. Goodbye!")
-            with lock:
-                for client in clients:
-                    client.close()  # Close all client connections
-                clients.clear()
-            s.close()  # Close the server socket
-            break  # Exit the admin_commands loop to stop the thread
-        else:
-            print("Invalid command!")
-
-
 try:
     while True:
         conn, addr = s.accept()
-        print(f"New connection: {addr}")
-        start_new_thread(start_client, (conn, addr))
+        start_new_thread(ChatRoom.client_thread, (conn, addr))
 except Exception as e:
     print(f"Server error: {e}")
 finally:
