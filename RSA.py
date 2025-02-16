@@ -81,17 +81,3 @@ def decrypt(ciphertext, private_key):
     d, n = private_key
     plaintext = ''.join(chr(pow(char, d, n)) for char in ciphertext)
     return plaintext
-
-# # Example usage
-# public_key, private_key = generate_keys(bits=512)
-
-# message = "Hello, RSA!"
-# print("Original Message:", message)
-
-# # Encrypt the message
-# encrypted_msg = encrypt(message, public_key)
-# print("Encrypted:", encrypted_msg)
-
-# # Decrypt the message
-# decrypted_msg = decrypt(encrypted_msg, private_key)
-# print("Decrypted:", decrypted_msg)

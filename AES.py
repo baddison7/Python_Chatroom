@@ -19,6 +19,11 @@ def pad(data):
 def unpad(data):
     return data[:-ord(data[-1:])]
 
+def generate_key_from_salt(password, salt):
+    from hashlib import pbkdf2_hmac
+    key = pbkdf2_hmac('sha256', password.encode(), salt, 100000)
+    return key
+
 # Encrypt a message
 def encrypt_message(message, key):
     message = pad(message.encode())  # Convert to bytes and pad
