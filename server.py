@@ -2,7 +2,7 @@ import socket, threading, time, RSA, json, AES
 from _thread import *
 
 # Server configuration
-server = input("Enter your local IP: ")
+server = "10.1.148.22"
 port = 5555
 
 # Create a socket (AF_INET for IPv4, SOCK_STREAM for TCP)

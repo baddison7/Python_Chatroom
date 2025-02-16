@@ -4,7 +4,7 @@ class Network:
     def __init__(self):
         # Initialize the client socket with IPv4 and TCP
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = input("Enter your local IP: ")  # Get the server IP from the user
+        self.server = "10.1.148.22"  # Get the server IP from the user
         self.port = 5555  # Default port number
         self.addr = (self.server, self.port)  # Server address tuple
         self.name = ''  # Placeholder for client username
